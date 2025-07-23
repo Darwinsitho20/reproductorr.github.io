@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reproductor de Música</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px #000;
+    }
+
+    input[type="file"] {
+      margin-bottom: 20px;
+    }
+
+    audio {
+      width: 90%;
+      max-width: 500px;
+      margin-top: 10px;
+    }
+
+    .controls {
+      margin-top: 15px;
+    }
+
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 20px;
+      }
+      button {
+        font-size: 14px;
+        padding: 8px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🎵 Reproductor de Música</h1>
+
+  <input type="file" id="fileInput" multiple accept="audio/*" />
+
+  <div class="controls">
+    <button onclick="prevTrack()">⏮ Anterior</button>
+    <button onclick="togglePlayPause()">⏯ Play/Pausa</button>
+    <button onclick="nextTrack()">⏭ Siguiente</button>
+  </div>
+
+  <audio id="audioPlayer" controls></audio>
+
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const audioPlayer = document.getElementById('audioPlayer');
+
+    let playlist = [];
+    let currentTrack = 0;
+    let isPlaying = false;
+
+    fileInput.addEventListener('change', () => {
+      playlist = Array.from(fileInput.files);
+      currentTrack = 0;
+      if (playlist.length > 0) {
+        loadTrack(currentTrack);
+        playTrack();
+      }
+    });
+
+    function loadTrack(index) {
+      const file = playlist[index];
+      const url = URL.createObjectURL(file);
+      audioPlayer.src = url;
+    }
+
+    function playTrack() {
+      if (playlist.length === 0) return;
+      audioPlayer.play();
+      isPlaying = true;
+    }
+
+    function pauseTrack() {
+      audioPlayer.pause();
+      isPlaying = false;
+    }
+
+    function togglePlayPause() {
+      if (isPlaying) {
+        pauseTrack();
+      } else {
+        playTrack();
+      }
+    }
+
+    function nextTrack() {
+      if (playlist.length === 0) return;
+      currentTrack = (currentTrack + 1) % playlist.length;
+      loadTrack(currentTrack);
+      playTrack();
+    }
+
+    function prevTrack() {
+      if (playlist.length === 0) return;
+      currentTrack = (currentTrack - 1 + playlist.length) % playlist.length;
+      loadTrack(currentTrack);
+      playTrack();
+    }
+
+    // Auto-play next when current ends
+    audioPlayer.addEventListener('ended', () => {
+      nextTrack();
+    });
+  </script>
+</body>
+</html>
